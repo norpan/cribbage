@@ -8,11 +8,48 @@ type Card
     = Card Suit Rank
 
 
+cardToString : Card -> String
+cardToString (Card suit rank) =
+    rankToString rank ++ suitToString suit
+
+
 type Suit
     = Clubs
     | Diamonds
     | Hearts
     | Spades
+
+
+suitToString : Suit -> String
+suitToString suit =
+    case suit of
+        Clubs ->
+            "C"
+
+        Diamonds ->
+            "D"
+
+        Hearts ->
+            "H"
+
+        Spades ->
+            "S"
+
+
+suitOrder : Suit -> Int
+suitOrder suit =
+    case suit of
+        Clubs ->
+            1
+
+        Diamonds ->
+            2
+
+        Hearts ->
+            3
+
+        Spades ->
+            4
 
 
 type Rank
@@ -31,8 +68,99 @@ type Rank
     | King
 
 
+rankToString : Rank -> String
+rankToString rank =
+    case rank of
+        Ace ->
+            "A"
+
+        Two ->
+            "2"
+
+        Three ->
+            "3"
+
+        Four ->
+            "4"
+
+        Five ->
+            "5"
+
+        Six ->
+            "6"
+
+        Seven ->
+            "7"
+
+        Eight ->
+            "8"
+
+        Nine ->
+            "9"
+
+        Ten ->
+            "T"
+
+        Jack ->
+            "J"
+
+        Queen ->
+            "Q"
+
+        King ->
+            "K"
+
+
+rankOrder : Rank -> Int
+rankOrder rank =
+    case rank of
+        Ace ->
+            1
+
+        Two ->
+            2
+
+        Three ->
+            3
+
+        Four ->
+            4
+
+        Five ->
+            5
+
+        Six ->
+            6
+
+        Seven ->
+            7
+
+        Eight ->
+            8
+
+        Nine ->
+            9
+
+        Ten ->
+            10
+
+        Jack ->
+            11
+
+        Queen ->
+            12
+
+        King ->
+            13
+
+
 type alias Deck =
     List Card
+
+
+sortCards : List Card -> List Card
+sortCards cards =
+    List.sortBy (\(Card _ rank) -> rankOrder rank) cards
 
 
 newDeck : Deck

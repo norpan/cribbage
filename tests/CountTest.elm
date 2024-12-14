@@ -22,7 +22,7 @@ countTests =
                         , Card Clubs Seven
                         ]
                 in
-                Expect.equal 2 (count cards)
+                Expect.equal 2 (count cards).total
         , test "no fifteens" <|
             \() ->
                 let
@@ -34,7 +34,7 @@ countTests =
                         , Card Clubs Seven
                         ]
                 in
-                Expect.equal 0 (count cards)
+                Expect.equal 0 (count cards).total
         , test "sequence of three and a pair" <|
             \() ->
                 let
@@ -46,7 +46,7 @@ countTests =
                         , Card Clubs Five
                         ]
                 in
-                Expect.equal 8 (count cards)
+                Expect.equal 8 (count cards).total
         , test "sequence of three and and two pairs" <|
             \() ->
                 let
@@ -58,7 +58,7 @@ countTests =
                         , Card Hearts Three
                         ]
                 in
-                Expect.equal 16 (count cards)
+                Expect.equal 16 (count cards).total
         , test "four flush" <|
             \() ->
                 let
@@ -70,7 +70,7 @@ countTests =
                         , Card Spades Ten
                         ]
                 in
-                Expect.equal 4 (count cards)
+                Expect.equal 4 (count cards).total
         , test "five flush" <|
             \() ->
                 let
@@ -82,7 +82,7 @@ countTests =
                         , Card Spades Ten
                         ]
                 in
-                Expect.equal 5 (count cards)
+                Expect.equal 5 (count cards).total
         , test "28" <|
             \() ->
                 let
@@ -94,7 +94,7 @@ countTests =
                         , Card Diamonds Jack
                         ]
                 in
-                Expect.equal 28 (count cards)
+                Expect.equal 28 (count cards).total
         , test "maximum 29" <|
             \() ->
                 let
@@ -106,7 +106,7 @@ countTests =
                         , Card Spades Jack
                         ]
                 in
-                Expect.equal 29 (count cards)
+                Expect.equal 29 (count cards).total
         , test "Random hand" <|
             \() ->
                 let
@@ -119,5 +119,5 @@ countTests =
                     ( ( cards, _ ), _ ) =
                         Random.step handGenerator seed
                 in
-                Expect.equal 10 (count cards)
+                Expect.equal 10 (count cards).total
         ]

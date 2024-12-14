@@ -10,13 +10,29 @@ import Card exposing (..)
 import List
 
 
-count : List Card -> Int
+type alias CountResult =
+    { fifteens : Int, runs : Int, pairs : Int, flush : Int, nobs : Int, total : Int }
+
+
+count : List Card -> CountResult
 count cards =
-    countFifteens cards
-        + countRuns cards
-        + countPairs cards
-        + countFlush cards
-        + countNobs cards
+    let
+        fifteens =
+            countFifteens cards
+
+        runs =
+            countRuns cards
+
+        pairs =
+            countPairs cards
+
+        flush =
+            countFlush cards
+
+        nobs =
+            countNobs cards
+    in
+    { fifteens = fifteens, runs = runs, pairs = pairs, flush = flush, nobs = nobs, total = fifteens + runs + pairs + flush + nobs }
 
 
 countFifteens : List Card -> Int
