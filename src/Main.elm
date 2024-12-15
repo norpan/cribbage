@@ -54,11 +54,8 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div [ style "font-size" "18px", style "font-family" "sans-serif" ]
-        [ --div [] [ text (String.fromInt (Count.count model.hand).pairs) ]
-          --, div [] [ text (String.fromInt (Count.count model.hand).total) ]
-          --, div [] [ text (String.fromInt model.submittedScore) ]
-          viewCards model
+    div [ style "font-size" "32px", style "font-family" "sans-serif" ]
+        [ viewCards model
         , viewScoreButtons model
         ]
 
@@ -118,7 +115,7 @@ viewCard card =
 
 viewScoreButtons : Model -> Html Msg
 viewScoreButtons model =
-    table [ style "width" "100%" ]
+    table [ style "table-layout" "fixed", style "width" "100%" ]
         [ viewScoreButtonRow model [ 0, 1, 2, 3, 4, 5 ]
         , viewScoreButtonRow model [ 6, 7, 8, 9, 10, 11 ]
         , viewScoreButtonRow model [ 12, 13, 14, 15, 16, 17 ]
@@ -143,8 +140,8 @@ viewButtonScore model score =
             [ button
                 [ disabled showButtons
                 , style "width" "100%"
-                , style "height" "40px"
-                , style "font-size" "24px"
+                , style "height" "80px"
+                , style "font-size" "40"
                 ]
                 [ text "New" ]
             ]
@@ -157,8 +154,8 @@ viewButtonScore model score =
             [ button
                 [ disabled (not showButtons)
                 , style "width" "100%"
-                , style "height" "40px"
-                , style "font-size" "24px"
+                , style "height" "80px"
+                , style "font-size" "40"
                 ]
                 [ text (String.fromInt score) ]
             ]

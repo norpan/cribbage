@@ -6263,8 +6263,8 @@ var $author$project$Main$viewButtonScore = F2(
 						[
 							$elm$html$Html$Attributes$disabled(showButtons),
 							A2($elm$html$Html$Attributes$style, 'width', '100%'),
-							A2($elm$html$Html$Attributes$style, 'height', '40px'),
-							A2($elm$html$Html$Attributes$style, 'font-size', '24px')
+							A2($elm$html$Html$Attributes$style, 'height', '80px'),
+							A2($elm$html$Html$Attributes$style, 'font-size', '40')
 						]),
 					_List_fromArray(
 						[
@@ -6285,8 +6285,8 @@ var $author$project$Main$viewButtonScore = F2(
 						[
 							$elm$html$Html$Attributes$disabled(!showButtons),
 							A2($elm$html$Html$Attributes$style, 'width', '100%'),
-							A2($elm$html$Html$Attributes$style, 'height', '40px'),
-							A2($elm$html$Html$Attributes$style, 'font-size', '24px')
+							A2($elm$html$Html$Attributes$style, 'height', '80px'),
+							A2($elm$html$Html$Attributes$style, 'font-size', '40')
 						]),
 					_List_fromArray(
 						[
@@ -6310,6 +6310,7 @@ var $author$project$Main$viewScoreButtons = function (model) {
 		$elm$html$Html$table,
 		_List_fromArray(
 			[
+				A2($elm$html$Html$Attributes$style, 'table-layout', 'fixed'),
 				A2($elm$html$Html$Attributes$style, 'width', '100%')
 			]),
 		_List_fromArray(
@@ -6346,7 +6347,7 @@ var $author$project$Main$view = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				A2($elm$html$Html$Attributes$style, 'font-size', '18px'),
+				A2($elm$html$Html$Attributes$style, 'font-size', '32px'),
 				A2($elm$html$Html$Attributes$style, 'font-family', 'sans-serif')
 			]),
 		_List_fromArray(
