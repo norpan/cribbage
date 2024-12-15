@@ -7,15 +7,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Random exposing (generate)
-import ViewCard exposing (..)
 
 
 type alias Model =
-    { hand : List Card, submittedScore : Int }
+    { hand : List Card, scores : Maybe ( Int, Count.CountResult ) }
 
 
 type Msg
-    = NoOp
+    = GenerateHand
     | NewHand (List Card)
     | SubmitScore Int
 
@@ -27,7 +26,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { hand = [], submittedScore = 0 }, generateHand )
+    ( { hand = [], scores = Nothing }, generateHand )
 
 
 generateHand : Cmd Msg
@@ -38,14 +37,14 @@ generateHand =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
+        GenerateHand ->
+            ( { model | scores = Nothing }, generateHand )
 
         NewHand hand ->
             ( { model | hand = hand }, Cmd.none )
 
         SubmitScore score ->
-            ( { model | submittedScore = score }, Cmd.none )
+            ( { model | scores = Just ( score, Count.count model.hand ) }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -55,18 +54,18 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ div [] [ text (String.fromInt (Count.count model.hand).pairs) ]
-        , div [] [ text (String.fromInt (Count.count model.hand).total) ]
-        , div [] [ text (String.fromInt model.submittedScore) ]
-        , viewCards model.hand
-        , viewScores model
+    div [ style "font-size" "18px", style "font-family" "sans-serif" ]
+        [ --div [] [ text (String.fromInt (Count.count model.hand).pairs) ]
+          --, div [] [ text (String.fromInt (Count.count model.hand).total) ]
+          --, div [] [ text (String.fromInt model.submittedScore) ]
+          viewCards model
+        , viewScoreButtons model
         ]
 
 
-viewCards : List Card -> Html Msg
-viewCards cards =
-    case cards of
+viewCards : Model -> Html Msg
+viewCards model =
+    case model.hand of
         [] ->
             text ""
 
@@ -75,8 +74,9 @@ viewCards cards =
                 [ div
                     [ style "width" "100%"
                     , style "display" "flex"
+                    , style "gap" "10px"
                     ]
-                    [ viewCard card ]
+                    [ viewCard card, viewResult model ]
                 , div
                     [ style "width" "100%"
                     , style "display" "flex"
@@ -85,31 +85,80 @@ viewCards cards =
                 ]
 
 
+viewResult : Model -> Html Msg
+viewResult model =
+    case model.scores of
+        Just ( submittedScore, handScore ) ->
+            div
+                [ style "color"
+                    (if submittedScore == handScore.total then
+                        "green"
+
+                     else
+                        "red"
+                    )
+                ]
+                [ div [] [ text ("Your calculation: " ++ String.fromInt submittedScore) ]
+                , div [] [ text ("Actual score: " ++ String.fromInt handScore.total) ]
+                , div [] [ text ("Fifteens: " ++ String.fromInt handScore.fifteens) ]
+                , div [] [ text ("Runs: " ++ String.fromInt handScore.runs) ]
+                , div [] [ text ("Pairs: " ++ String.fromInt handScore.pairs) ]
+                , div [] [ text ("Flush: " ++ String.fromInt handScore.flush) ]
+                , div [] [ text ("Nobs: " ++ String.fromInt handScore.nobs) ]
+                ]
+
+        _ ->
+            text "Calculate score!"
+
+
 viewCard : Card -> Html msg
 viewCard card =
     img [ style "width" "25%", class "card", src ("cards/" ++ cardToString card ++ ".svg") ] []
 
 
-viewScores : Model -> Html Msg
-viewScores model =
+viewScoreButtons : Model -> Html Msg
+viewScoreButtons model =
     table [ style "width" "100%" ]
-        [ viewScoreRow [ 0, 1, 2, 3, 4, 5 ]
-        , viewScoreRow [ 6, 7, 8, 9, 10, 11 ]
-        , viewScoreRow [ 12, 13, 14, 15, 16, 17 ]
-        , viewScoreRow [ 18, -1, 20, 21, 22, 23 ]
-        , viewScoreRow [ 24, -1, -1, -1, 28, 29 ]
+        [ viewScoreButtonRow model [ 0, 1, 2, 3, 4, 5 ]
+        , viewScoreButtonRow model [ 6, 7, 8, 9, 10, 11 ]
+        , viewScoreButtonRow model [ 12, 13, 14, 15, 16, 17 ]
+        , viewScoreButtonRow model [ 18, -1, 20, 21, 22, 23 ]
+        , viewScoreButtonRow model [ 24, -1, -2, -1, 28, 29 ]
         ]
 
 
-viewScoreRow : List Int -> Html Msg
-viewScoreRow scores =
-    tr [] (List.map viewScore scores)
+viewScoreButtonRow : Model -> List Int -> Html Msg
+viewScoreButtonRow model scores =
+    tr [] (List.map (viewButtonScore model) scores)
 
 
-viewScore : Int -> Html Msg
-viewScore score =
-    if score == -1 then
+viewButtonScore : Model -> Int -> Html Msg
+viewButtonScore model score =
+    let
+        showButtons =
+            model.scores == Nothing
+    in
+    if score < -1 then
+        td [ onClick GenerateHand ]
+            [ button
+                [ disabled showButtons
+                , style "width" "100%"
+                , style "height" "40px"
+                , style "font-size" "24px"
+                ]
+                [ text "New" ]
+            ]
+
+    else if score == -1 then
         td [] []
 
     else
-        td [ onClick (SubmitScore score) ] [ button [ style "width" "100%", style "height" "40px", style "font-size" "24px" ] [ text (String.fromInt score) ] ]
+        td [ onClick (SubmitScore score) ]
+            [ button
+                [ disabled (not showButtons)
+                , style "width" "100%"
+                , style "height" "40px"
+                , style "font-size" "24px"
+                ]
+                [ text (String.fromInt score) ]
+            ]

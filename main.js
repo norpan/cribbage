@@ -5705,7 +5705,7 @@ var $author$project$Card$randomHand = A2(
 var $author$project$Main$generateHand = A2($elm$random$Random$generate, $author$project$Main$NewHand, $author$project$Card$randomHand);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{hand: _List_Nil, submittedScore: 0},
+		{hand: _List_Nil, scores: $elm$core$Maybe$Nothing},
 		$author$project$Main$generateHand);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5713,29 +5713,6 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$none;
 };
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Main$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'NoOp':
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'NewHand':
-				var hand = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{hand: hand}),
-					$elm$core$Platform$Cmd$none);
-			default:
-				var score = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{submittedScore: score}),
-					$elm$core$Platform$Cmd$none);
-		}
-	});
 var $author$project$Count$combinations = function (list) {
 	if (!list.b) {
 		return _List_fromArray(
@@ -5964,9 +5941,41 @@ var $author$project$Count$count = function (cards) {
 	var fifteens = $author$project$Count$countFifteens(cards);
 	return {fifteens: fifteens, flush: flush, nobs: nobs, pairs: pairs, runs: runs, total: (((fifteens + runs) + pairs) + flush) + nobs};
 };
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Main$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'GenerateHand':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{scores: $elm$core$Maybe$Nothing}),
+					$author$project$Main$generateHand);
+			case 'NewHand':
+				var hand = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{hand: hand}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var score = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							scores: $elm$core$Maybe$Just(
+								_Utils_Tuple2(
+									score,
+									$author$project$Count$count(model.hand)))
+						}),
+					$elm$core$Platform$Cmd$none);
+		}
+	});
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $author$project$Card$rankOrder = function (rank) {
 	switch (rank.$) {
 		case 'Ace':
@@ -6006,8 +6015,8 @@ var $author$project$Card$sortCards = function (cards) {
 		},
 		cards);
 };
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Card$rankToString = function (rank) {
 	switch (rank.$) {
 		case 'Ace':
@@ -6085,12 +6094,91 @@ var $author$project$Main$viewCard = function (card) {
 			]),
 		_List_Nil);
 };
-var $author$project$Main$viewCards = function (cards) {
-	if (!cards.b) {
+var $author$project$Main$viewResult = function (model) {
+	var _v0 = model.scores;
+	if (_v0.$ === 'Just') {
+		var _v1 = _v0.a;
+		var submittedScore = _v1.a;
+		var handScore = _v1.b;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$Attributes$style,
+					'color',
+					_Utils_eq(submittedScore, handScore.total) ? 'green' : 'red')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							'Your calculation: ' + $elm$core$String$fromInt(submittedScore))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							'Actual score: ' + $elm$core$String$fromInt(handScore.total))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							'Fifteens: ' + $elm$core$String$fromInt(handScore.fifteens))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							'Runs: ' + $elm$core$String$fromInt(handScore.runs))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							'Pairs: ' + $elm$core$String$fromInt(handScore.pairs))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							'Flush: ' + $elm$core$String$fromInt(handScore.flush))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							'Nobs: ' + $elm$core$String$fromInt(handScore.nobs))
+						]))
+				]));
+	} else {
+		return $elm$html$Html$text('Calculate score!');
+	}
+};
+var $author$project$Main$viewCards = function (model) {
+	var _v0 = model.hand;
+	if (!_v0.b) {
 		return $elm$html$Html$text('');
 	} else {
-		var card = cards.a;
-		var rest = cards.b;
+		var card = _v0.a;
+		var rest = _v0.b;
 		return A2(
 			$elm$html$Html$div,
 			_List_Nil,
@@ -6101,11 +6189,13 @@ var $author$project$Main$viewCards = function (cards) {
 					_List_fromArray(
 						[
 							A2($elm$html$Html$Attributes$style, 'width', '100%'),
-							A2($elm$html$Html$Attributes$style, 'display', 'flex')
+							A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+							A2($elm$html$Html$Attributes$style, 'gap', '10px')
 						]),
 					_List_fromArray(
 						[
-							$author$project$Main$viewCard(card)
+							$author$project$Main$viewCard(card),
+							$author$project$Main$viewResult(model)
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -6123,10 +6213,21 @@ var $author$project$Main$viewCards = function (cards) {
 };
 var $elm$html$Html$table = _VirtualDom_node('table');
 var $elm$html$Html$tr = _VirtualDom_node('tr');
+var $author$project$Main$GenerateHand = {$: 'GenerateHand'};
 var $author$project$Main$SubmitScore = function (a) {
 	return {$: 'SubmitScore', a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+var $elm$core$Basics$not = _Basics_not;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -6145,38 +6246,66 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $elm$html$Html$td = _VirtualDom_node('td');
-var $author$project$Main$viewScore = function (score) {
-	return _Utils_eq(score, -1) ? A2($elm$html$Html$td, _List_Nil, _List_Nil) : A2(
-		$elm$html$Html$td,
-		_List_fromArray(
-			[
-				$elm$html$Html$Events$onClick(
-				$author$project$Main$SubmitScore(score))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						A2($elm$html$Html$Attributes$style, 'width', '100%'),
-						A2($elm$html$Html$Attributes$style, 'height', '40px'),
-						A2($elm$html$Html$Attributes$style, 'font-size', '24px')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(score))
-					]))
-			]));
-};
-var $author$project$Main$viewScoreRow = function (scores) {
-	return A2(
-		$elm$html$Html$tr,
-		_List_Nil,
-		A2($elm$core$List$map, $author$project$Main$viewScore, scores));
-};
-var $author$project$Main$viewScores = function (model) {
+var $author$project$Main$viewButtonScore = F2(
+	function (model, score) {
+		var showButtons = _Utils_eq(model.scores, $elm$core$Maybe$Nothing);
+		return (_Utils_cmp(score, -1) < 0) ? A2(
+			$elm$html$Html$td,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick($author$project$Main$GenerateHand)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$disabled(showButtons),
+							A2($elm$html$Html$Attributes$style, 'width', '100%'),
+							A2($elm$html$Html$Attributes$style, 'height', '40px'),
+							A2($elm$html$Html$Attributes$style, 'font-size', '24px')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('New')
+						]))
+				])) : (_Utils_eq(score, -1) ? A2($elm$html$Html$td, _List_Nil, _List_Nil) : A2(
+			$elm$html$Html$td,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					$author$project$Main$SubmitScore(score))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$disabled(!showButtons),
+							A2($elm$html$Html$Attributes$style, 'width', '100%'),
+							A2($elm$html$Html$Attributes$style, 'height', '40px'),
+							A2($elm$html$Html$Attributes$style, 'font-size', '24px')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$elm$core$String$fromInt(score))
+						]))
+				])));
+	});
+var $author$project$Main$viewScoreButtonRow = F2(
+	function (model, scores) {
+		return A2(
+			$elm$html$Html$tr,
+			_List_Nil,
+			A2(
+				$elm$core$List$map,
+				$author$project$Main$viewButtonScore(model),
+				scores));
+	});
+var $author$project$Main$viewScoreButtons = function (model) {
 	return A2(
 		$elm$html$Html$table,
 		_List_fromArray(
@@ -6185,57 +6314,45 @@ var $author$project$Main$viewScores = function (model) {
 			]),
 		_List_fromArray(
 			[
-				$author$project$Main$viewScoreRow(
+				A2(
+				$author$project$Main$viewScoreButtonRow,
+				model,
 				_List_fromArray(
 					[0, 1, 2, 3, 4, 5])),
-				$author$project$Main$viewScoreRow(
+				A2(
+				$author$project$Main$viewScoreButtonRow,
+				model,
 				_List_fromArray(
 					[6, 7, 8, 9, 10, 11])),
-				$author$project$Main$viewScoreRow(
+				A2(
+				$author$project$Main$viewScoreButtonRow,
+				model,
 				_List_fromArray(
 					[12, 13, 14, 15, 16, 17])),
-				$author$project$Main$viewScoreRow(
+				A2(
+				$author$project$Main$viewScoreButtonRow,
+				model,
 				_List_fromArray(
 					[18, -1, 20, 21, 22, 23])),
-				$author$project$Main$viewScoreRow(
+				A2(
+				$author$project$Main$viewScoreButtonRow,
+				model,
 				_List_fromArray(
-					[24, -1, -1, -1, 28, 29]))
+					[24, -1, -2, -1, 28, 29]))
 			]));
 };
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
-		_List_Nil,
 		_List_fromArray(
 			[
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(
-							$author$project$Count$count(model.hand).pairs))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(
-							$author$project$Count$count(model.hand).total))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(model.submittedScore))
-					])),
-				$author$project$Main$viewCards(model.hand),
-				$author$project$Main$viewScores(model)
+				A2($elm$html$Html$Attributes$style, 'font-size', '18px'),
+				A2($elm$html$Html$Attributes$style, 'font-family', 'sans-serif')
+			]),
+		_List_fromArray(
+			[
+				$author$project$Main$viewCards(model),
+				$author$project$Main$viewScoreButtons(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
